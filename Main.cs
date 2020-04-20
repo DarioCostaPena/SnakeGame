@@ -6,6 +6,7 @@ using System.Linq;
 namespace SnakeGame
 {
     class SnakeGame : Snake.Listener {
+		// este es un comentario que ha sido añadido en la nueva rama test-feature
         public static TiledWorld t = new TiledWorld(20, 10);
         public static Random random = new Random();
         public static char food = '·';

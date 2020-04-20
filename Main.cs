@@ -1,18 +1,24 @@
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SnakeGame
 {
-    class SnakeGame {
+    class SnakeGame : Snake.Listener {
         public static TiledWorld t = new TiledWorld(20, 10);
         public static Random random = new Random();
+        public static char food = '·';
 
-        static void Main() {
-            var genericObjects = new List<GenericMapObject>();
-            var snake = new Snake(10, 5, 5);
+        static void Main() => new SnakeGame().Run();
 
-            var food = '·';
+        List<GenericMapObject> genericObjects = new List<GenericMapObject>();
+        Snake snake = new Snake(10, 5, 5);
+
+        private void Run() {
+            snake.notifier.RegisterListener(this);
+
+            AddApple();
 
             while (true) {
                 Console.Clear();
@@ -32,41 +38,42 @@ namespace SnakeGame
                 Thread.Sleep(610);
             }
         }
+
+        private void AddApple() {
+            while (true) {
+                var x = random.Next(18) + 1;
+                var y = random.Next(8) + 1;
+
+                if (t.Peek(x, y) != ' ') continue;
+
+                genericObjects.FirstOrDefault(i => i.sprite == food).Let( result => {
+                    if (result != null)
+                        genericObjects.Remove(result);
+                });
+
+                genericObjects.Add(new GenericMapObject(x, y, food));
+
+                break;
+            }
+        }
+
+        public void AteApple(Snake snake) {
+            AddApple();
+        }
     }
 
     class GenericMapObject {
-        private char sprite;
-        Vector2 position = new Vector2();
-
+        public char sprite;
+        
         public GenericMapObject(int x, int y, char sprite) {
-            position.Set(x, y);
+            Position.Set(x, y);
             this.sprite = sprite;
         }
+        
+        public Vector2 Position { get => Position; set => Position = value; }
 
         public void Draw() {
-            SnakeGame.t.Draw(position.x, position.y, sprite);
-        }
-    }
-
-    class Vector2 {
-        public int x;
-        public int y;
-
-        public Vector2(int x = 0, int y = 0) {
-            Set(x, y);
-        }
-
-        public Vector2(Vector2 vector) {
-            Set(vector);
-        }
-
-        public void Set(int x = 0, int y = 0) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public void Set(Vector2 vector) {
-            this.Set(vector.x, vector.y);
+            SnakeGame.t.Draw(Position.x, Position.y, sprite);
         }
     }
 }

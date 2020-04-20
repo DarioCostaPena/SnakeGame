@@ -5,6 +5,14 @@ namespace SnakeGame
     public class TiledWorld {
         private Line[] lines;
 
+        public int Width() {
+            return lines[0].columns.Length;
+        }
+        
+        public int Height() {
+            return lines.Length;
+        }
+
         public TiledWorld(int width, int height) {
             ResetLines(width, height);
         }
@@ -53,6 +61,10 @@ namespace SnakeGame
             public Line(int width) {
                 this.width = width;
                 this.columns = new char[width];
+
+                for (int i = 0; i < width; i++) {
+                    columns[i] = ' ';
+                }
             }
         }
     }
